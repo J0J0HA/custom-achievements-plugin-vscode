@@ -19,7 +19,27 @@
         "command": "custom-achievements.reconnect",
         "title": "Achievements: Reconnect"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Custom Achievements",
+      "properties": {
+        "custom-achievements.server": {
+          "type": "string",
+          "default": "achieve.jojojux.de",
+          "description": "The custom-achievements-server instance."
+        },
+        "custom-achievements.user": {
+          "type": "string",
+          "default": "admin",
+          "description": "Your username on that instance"
+        },
+        "custom-achievements.secure": {
+          "type": "boolean",
+          "default": true,
+          "description": "Does the server instance support SSL?"
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",

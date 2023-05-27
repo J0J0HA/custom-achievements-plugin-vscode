@@ -16,10 +16,11 @@ function send_stats_update(stat) {
 
 function _establisher(resolve, reject) {
 	const config = vscode.workspace.getConfiguration('custom-achievements');
-	const server = config.get("server", "localhost:8055")
-	const user = config.get("user", "admin")
+	const secure = config.get("custom-achievements.secure", true)
+	const server = config.get("custom-achievements.server", "achieve.jojojux.de")
+	const user = config.get("custom-achievements.user", "admin")
 	vscode.window.setStatusBarMessage(`Connecting to '${server}' as ${user}...`);
-	ws = new WebSocket("ws://" + server + "/ws/user/" + user);
+	ws = new WebSocket(`ws${secure ? "s" : ""}://` + server + "/ws/user/" + user);
 	ws.on("open", async function () {
 		vscode.window.setStatusBarMessage(`Connection to Achievement-Server established.`);
 		send_stats_update("vscode.open")
@@ -46,7 +47,7 @@ function _establisher(resolve, reject) {
 					vscode.ViewColumn.Active,
 					{}
 				);
-				panel.webview.html = `<table style="padding: 10px"><tr><td><img src="${d.image_url}" style="border-radius: 50%; height: 150px; width: 150px;"></td><td style="padding: 0px 30px; display: block; top: 0px; position:  absolute;"><h1>${d.name} ${d.level}</h1><p>${d.description}</p><a href="http://${server}/user/${user}">Show all my achievements</a></td>`;
+				panel.webview.html = `<table style="padding: 10px"><tr><td><img src="${d.image_url}" style="border-radius: 50%; height: 150px; width: 150px;"></td><td style="padding: 0px 30px; display: block; top: 0px; position:  absolute;"><h1>${d.name} ${d.level}</h1><p>${d.description}</p><a href="http${secure ? "s" : ""}://${server}/user/${user}">Show all my achievements</a></td>`;
 			}
 		}
 		else if (d.type == "error_report") {
@@ -77,11 +78,13 @@ async function activate(context) {
 		ws = await establishConnnection()
 	}));
 	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => {
+		if (document.fileName.endsWith(".git")) return;
 		console.log(document.fileName, document.languageId)
 		send_stats_update("file." + document.languageId + ".open");
 	}));
 	
 	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((document) => {
+		if (document.fileName.endsWith(".git")) return;
 		console.log(document.fileName, document.languageId)
 		send_stats_update("file." + document.languageId + ".close");
 	}));
