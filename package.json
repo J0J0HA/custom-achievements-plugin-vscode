@@ -1,6 +1,10 @@
 {
   "name": "custom-achievements",
-  "displayName": "custom-achievements",
+  "publisher": "jojojux",
+  "repository": {
+    "url": "https://github.com/J0J0HA/custom-achievements-plugin-vscode"
+  },
+  "displayName": "Custom Achievements",
   "description": "Client for custom-achievements-server",
   "version": "0.0.1",
   "engines": {
