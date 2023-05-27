@@ -46,7 +46,7 @@ function _establisher(resolve, reject) {
 					vscode.ViewColumn.Active,
 					{}
 				);
-				panel.webview.html = `<h1>${d.name} ${d.level}</h1><p>${d.description}</p><a href="http://${server}/user/${user}">Show all my achievements</a>`;
+				panel.webview.html = `<table style="padding: 10px"><tr><td><img src="${d.image_url}" style="border-radius: 50%; height: 150px; width: 150px;"></td><td style="padding: 0px 30px; display: block; top: 0px; position:  absolute;"><h1>${d.name} ${d.level}</h1><p>${d.description}</p><a href="http://${server}/user/${user}">Show all my achievements</a></td>`;
 			}
 		}
 		else if (d.type == "error_report") {
