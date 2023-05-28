@@ -1,0 +1,22 @@
+name: Generate .vsix
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install vsce
+      run: npm i vsce
+    - name: Build the VSCode vsix-file
+      run: vsce package
+    - name: List files
+      run: ls
