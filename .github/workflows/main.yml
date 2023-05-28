@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Install vsce
-      run: npm i -g vsce
+    - name: Setup
+      run: npm i -g vsce && mkdir dist
     - name: Build the VSCode Extension Package
-      run: vsce package --out ./builds/
+      run: vsce package --out dist
     - name: FTP Upload
       uses: SamKirkland/FTP-Deploy-Action@4.1.0
       with:
@@ -22,8 +22,8 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         server-dir: /www/files.jojojux.de/resources/builds/custom-achievements-plugin-vscode/
-        local-dir: ./builds/
+        local-dir: ./dist/
     - uses: actions/upload-artifact@v3
       with:
         name: VSCode Extension
-        path: "./builds/*.vsix"
+        path: "./dist/*.vsix"
