@@ -16,7 +16,7 @@ jobs:
     - name: Build the VSCode Extension Package
       run: vsce package --out dist
     - name: FTP Upload
-      uses: tan-yuki/sftp-upload-action@v2
+      uses: Dylan700/sftp-upload-action@latest
       with:
         server: admin.jojojux.de
         username: ${{ secrets.FTP_USERNAME }}
