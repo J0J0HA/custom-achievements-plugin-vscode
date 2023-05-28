@@ -15,7 +15,7 @@ jobs:
       run: npm i -g vsce
     - name: Build the VSCode Extension Package
       run: vsce package
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: VSCode Extension
         path: "*.vsix"
