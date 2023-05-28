@@ -2,6 +2,8 @@
 
 This extension is a client for a custom-achievements-server.
 
+[VSIX-Download](https://files.jojojux.de/resources/builds/custom-achievements-plugin-vscode/)
+
 ## Features
 
 * sending live stats to the server to allow you to get achievements for opening specific files or using specific shortcuts
