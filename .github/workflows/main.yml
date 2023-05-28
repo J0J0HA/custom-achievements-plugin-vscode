@@ -1,4 +1,4 @@
-name: Generate .vsix
+name: Build VSCode Extension
 
 on:
   push:
@@ -7,16 +7,15 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Install vsce
-      run: npm i vsce
-    - name: Build the VSCode vsix-file
+      run: npm i -g vsce
+    - name: Build the VSCode Extension Package
       run: vsce package
-    - name: List files
-      run: ls
+    - uses: actions/upload-artifact@v2
+      with:
+        name: VSCode Extension
+        path: "*.vsix"
