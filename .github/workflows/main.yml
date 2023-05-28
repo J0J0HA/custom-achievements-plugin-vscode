@@ -21,8 +21,8 @@ jobs:
         server: admin.jojojux.de
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /www/files.jojojux.de/resources/builds/custom-achievements-plugin-vscode/
-        local-dir: ./dist/
+        uploads: |
+          ./dist/ => /www/files.jojojux.de/resources/builds/custom-achievements-plugin-vscode/
     - uses: actions/upload-artifact@v3
       with:
         name: VSCode Extension
