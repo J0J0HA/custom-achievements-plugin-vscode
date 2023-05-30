@@ -23,7 +23,7 @@ function _establisher(resolve, reject) {
 	ws = new WebSocket(`ws${secure ? "s" : ""}://` + server + "/ws/user/" + user);
 	ws.on("open", async function () {
 		vscode.window.setStatusBarMessage(`Connection to Achievement-Server established.`);
-		send_stats_update("vscode.open")
+		send_stats_update("ide.vscode.open")
 		resolve(ws);
 	})
 	ws.on("error", async function (e) {
