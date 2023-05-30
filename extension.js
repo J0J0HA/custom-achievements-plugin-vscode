@@ -5,10 +5,11 @@ const WebSocket = require('ws').WebSocket;
 
 let ws;
 
-function send_stats_update(stat) {
+function send_stats_update(stat, count=1) {
 	if (ws.readyState == WebSocket.OPEN) {
 		ws.send(JSON.stringify({
 			type: "stats_update",
+			count,
 			stat_name: stat
 		}));
 	}
@@ -23,7 +24,7 @@ function _establisher(resolve, reject) {
 	ws = new WebSocket(`ws${secure ? "s" : ""}://` + server + "/ws/user/" + user);
 	ws.on("open", async function () {
 		vscode.window.setStatusBarMessage(`Connection to Achievement-Server established.`);
-		send_stats_update("ide.vscode.open")
+		send_stats_update("ide.open.vscode")
 		resolve(ws);
 	})
 	ws.on("error", async function (e) {
@@ -82,18 +83,17 @@ async function activate(context) {
 	}));
 	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => {
 		if (document.fileName.endsWith(".git")) return;
-		console.log(document.fileName, document.languageId)
-		send_stats_update("file." + document.languageId + ".open");
+		send_stats_update("file.open." + document.languageId);
 	}));
 
 	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((document) => {
 		if (document.fileName.endsWith(".git")) return;
-		console.log(document.fileName, document.languageId)
-		send_stats_update("file." + document.languageId + ".close");
+		send_stats_update("file.close." + document.languageId);
 	}));
 
-	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(() => {
-		send_stats_update("type");
+	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((changeEvent) => {
+		console.log("111")
+		send_stats_update("type", changeEvent.contentChanges.length);
 	}));
 
 	context.subscriptions.push(vscode.debug.onDidStartDebugSession(() => {
