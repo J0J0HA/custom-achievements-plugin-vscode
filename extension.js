@@ -5,14 +5,18 @@ const WebSocket = require('ws').WebSocket;
 
 let ws;
 
-function send_stats_update(stat, count = 1) {
-	if (!count < 1) return;
+function send_stats_update(stat, count = 1, meta = {}) {
+	if (count < 1) return;
 	if (ws.readyState != WebSocket.OPEN) return;
 
 	ws.send(JSON.stringify({
 		type: "stats_update",
-		count,
-		stat_name: stat
+		count: count,
+		name: stat,
+		meta: {
+			timestamp: Date.now(),
+			...meta
+		}
 	}));
 }
 
@@ -93,7 +97,7 @@ async function activate(context) {
 	}));
 
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((changeEvent) => {
-		send_stats_update("type", changeEvent.contentChanges.length);
+		send_stats_update("type", changeEvent.contentChanges.length, { key: changeEvent.contentChanges[0].text });
 	}));
 
 	context.subscriptions.push(vscode.debug.onDidStartDebugSession(() => {
