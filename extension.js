@@ -97,7 +97,7 @@ async function activate(context) {
 	}));
 
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((changeEvent) => {
-		send_stats_update("type", changeEvent.contentChanges.length, { key: changeEvent.contentChanges[0].text });
+		send_stats_update("type", changeEvent.contentChanges.length);
 	}));
 
 	context.subscriptions.push(vscode.debug.onDidStartDebugSession(() => {
