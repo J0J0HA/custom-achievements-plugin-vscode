@@ -1,6 +1,7 @@
 # Custom Achievements
 
 [![Build VSCode Extension](https://github.com/J0J0HA/custom-achievements-plugin-vscode/actions/workflows/main.yml/badge.svg)](https://github.com/J0J0HA/custom-achievements-plugin-vscode/actions/workflows/main.yml)
+[![CodeQL](https://github.com/J0J0HA/custom-achievements-plugin-vscode/actions/workflows/codeql.yml/badge.svg)](https://github.com/J0J0HA/custom-achievements-plugin-vscode/actions/workflows/codeql.yml)
 
 This extension is a client for a custom-achievements-server.
 
