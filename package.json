@@ -32,6 +32,11 @@
           "default": "achieve.jojojux.de",
           "description": "The custom-achievements-server instance."
         },
+        "custom-achievements.password": {
+          "type": "string",
+          "default": "admin",
+          "description": "Your password on that instance"
+        },
         "custom-achievements.user": {
           "type": "string",
           "default": "admin",
