@@ -8,7 +8,7 @@
   "description": "Client for custom-achievements-server",
   "version": "0.2.2",
   "engines": {
-    "vscode": "^1.78.0"
+    "vscode": "^1.79.0"
   },
   "categories": [
     "Other"
