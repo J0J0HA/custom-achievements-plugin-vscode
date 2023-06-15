@@ -18,15 +18,6 @@ function send_stats_update(stat, count = 1, meta = {}) {
 	}));
 }
 
-/*
-  Is here to remove the reports from sonarlint.
-*/
-function run_async(func) {
-	return () => {
-		setTimeout(function () { func(...arguments) }, 0);
-	}
-}
-
 class CASWebSocket {
 	constructor(is_secure, server, username, password) {
 		// Config
@@ -214,26 +205,27 @@ function connect() {
 	})
 
 	casws.set_event_handler("notice", async (data) => {
+		console.log(data)
 		if (data.topic == "superuser") {
-			run_async(vscode.window.showWarningMessage)("Do not use the superuser account to login. (Else you get shown this message each time, which is very annoying...)");
+			vscode.window.showWarningMessage("Do not use the superuser account to login. (Else you get shown this message each time, which is very annoying...)");
 		} else {
-			run_async(vscode.window.showWarningMessage)("The server requested to show a notice that is unkown by the client. Report that on GitHub Issues. (The original topic was: " + data.topic + ")");
+			vscode.window.showWarningMessage("The server requested to show a notice that is unkown by the client. Report that on GitHub Issues. (The original topic was: " + data.topic + ")");
 		}
 	})
 
 	casws.set_event_handler("error", async (data) => {
 		if (data.error == "unknown_stat") {
-			run_async(vscode.window.showErrorMessage)("A report sent to the server was not registered. This probarbly means that the server is modified, or you misspelled something while trying to get achievements through the console. (The recieved error was: " + data.description + ")");
+			vscode.window.showErrorMessage("A report sent to the server was not registered. This probarbly means that the server is modified, or you misspelled something while trying to get achievements through the console. (The recieved error was: " + data.description + ")");
 		} else if (data.error == "unknown_type") {
-			run_async(vscode.window.showErrorMessage)("A message sent to the server had an invalid type. This probarbly means that the server is outdated or modified. (The recieved error was: " + data.description + ")");
+			vscode.window.showErrorMessage("A message sent to the server had an invalid type. This probarbly means that the server is outdated or modified. (The recieved error was: " + data.description + ")");
 		} else {
-			run_async(vscode.window.showErrorMessage)("The server sent an unknown error. Report that on GitHub Issues. (The original error was: " + data.error + ": " + data.description + ")");
+			vscode.window.showErrorMessage("The server sent an unknown error. Report that on GitHub Issues. (The original error was: " + data.error + ": " + data.description + ")");
 		}
 		casws.close(4102)
 	})
 
 	casws.set_event_handler("unknown_type", (data) => {
-		run_async(vscode.window.showErrorMessage)("The server sent an unkown message type. Report that on GitHub Issues. (The message type was: " + data.type + ")");
+		vscode.window.showErrorMessage("The server sent an unkown message type. Report that on GitHub Issues. (The message type was: " + data.type + ")");
 		casws.close(4102)
 	})
 
