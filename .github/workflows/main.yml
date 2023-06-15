@@ -18,7 +18,7 @@ jobs:
     - name: FTP Upload
       uses: Dylan700/sftp-upload-action@latest
       with:
-        server: admin.jojojux.de
+        server: 212.227.8.25
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         uploads: |
