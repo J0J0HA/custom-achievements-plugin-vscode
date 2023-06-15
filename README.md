@@ -1,6 +1,7 @@
 # Custom Achievements
 
 [![Build VSCode Extension](https://github.com/J0J0HA/custom-achievements-plugin-vscode/actions/workflows/main.yml/badge.svg)](https://github.com/J0J0HA/custom-achievements-plugin-vscode/actions/workflows/main.yml)
+[![CodeQL](https://github.com/J0J0HA/custom-achievements-plugin-vscode/actions/workflows/codeql.yml/badge.svg)](https://github.com/J0J0HA/custom-achievements-plugin-vscode/actions/workflows/codeql.yml)
 
 This extension is a client for a custom-achievements-server.
 
@@ -21,6 +22,3 @@ This extension contributes the following settings:
 ## Known Issues
 
 No known issues
-
-## License
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons Lizenzvertrag" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />Dieses Werk ist lizenziert unter einer <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz</a>.
