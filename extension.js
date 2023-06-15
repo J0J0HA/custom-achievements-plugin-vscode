@@ -205,7 +205,6 @@ function connect() {
 	})
 
 	casws.set_event_handler("notice", async (data) => {
-		console.log(data)
 		if (data.topic == "superuser") {
 			vscode.window.showWarningMessage("Do not use the superuser account to login. (Else you get shown this message each time, which is very annoying...)");
 		} else {
