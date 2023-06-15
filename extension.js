@@ -51,7 +51,6 @@ class CASWebSocket {
 
 		// Setup
 		this.set_msg_handler("accept_connection", () => {
-			console.log("accept")
 			this.accepted = true;
 			this.get_event_handler("connected")();
 		})
@@ -70,7 +69,6 @@ class CASWebSocket {
 
 		this.set_event_handler("message", (raw_data) => {
 			const data = JSON.parse(raw_data);
-			console.log("message", data)
 			this.get_msg_handler(data.type)(data);
 		})
 	}
@@ -138,17 +136,14 @@ class CASWebSocket {
 		});
 
 		this.websocket.on("error", (error) => {
-			console.error("error", error)
 			this.get_event_handler("ws-reject")(error);
 		});
 
 		this.websocket.on("close", (code) => {
-			console.log("close", code)
 			this.get_event_handler("close")(code);
 		});
 
 		this.websocket.on("unexpected-response", (error) => {
-			console.log("unex-resp", error)
 			this.get_event_handler("http-reject")(error);
 		});
 	}
@@ -191,7 +186,6 @@ function connect() {
 	})
 
 	casws.set_event_handler("new_achievement", async (data) => {
-		console.log(data)
 		let result = await vscode.window.showInformationMessage(`Achievement unlocked: ${data.name} ${data.level}`, "Show Details", "Dismiss");
 		if (result == "Show Details") {
 			let panel = vscode.window.createWebviewPanel(
@@ -382,7 +376,6 @@ async function activate(context) {
 	let casws = connect();
 
 	context.subscriptions.push(vscode.commands.registerCommand('custom-achievements.reconnect', function () {
-		console.log("jqswdasd")
 		casws.reconnect();
 	}));
 
