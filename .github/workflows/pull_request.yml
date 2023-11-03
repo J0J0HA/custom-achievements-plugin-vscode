@@ -1,0 +1,33 @@
+name: Build VSCode Extension
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup
+      run: npm i && npm i -g vsce && mkdir dist
+    - name: Set Git User
+      run: |
+        git config --global user.email "bot@github.com"
+        git config --global user.name "Github Actions Bot"
+    - name: Set Version
+      run: npm version prerelease
+    - name: Build the VSCode Extension Package
+      run: vsce package --out dist
+    - name: FTP Upload
+      uses: Dylan700/sftp-upload-action@latest
+      with:
+        server: 212.227.8.25
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        uploads: |
+          ./dist/ => /www/files.jojojux.de/resources/builds/custom-achievements-plugin-vscode/
+    - uses: actions/upload-artifact@v3
+      with:
+        name: VSCode Extension
+        path: "./dist/*.vsix"
