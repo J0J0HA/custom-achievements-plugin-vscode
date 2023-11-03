@@ -10,9 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup
-      run: npm i && npm i -g vsce && mkdir dist
+      run: npm i && npm i -g -U @vscode/vsce && mkdir dist
     - name: Build the VSCode Extension Package
-      run: vsce package --packagePath dist
+      run: vsce package --out dist
     - name: FTP Upload
       uses: Dylan700/sftp-upload-action@latest
       with:
