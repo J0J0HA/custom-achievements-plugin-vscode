@@ -16,8 +16,13 @@ This extension is a client for a custom-achievements-server.
 This extension contributes the following settings:
 
 * `custom-achievements.server`: The server domain/IP of the custom-achievements-server-instance.
-* `custom-achievements.secure`: If the instance supports.
+* `custom-achievements.secure`: If the instance supports SSL.
 * `custom-achievements.user`: The username to login with.
+* `custom-achievements.password`: The password to login with.
+
+> **Note**
+> The password is stored in plain text in the settings.json file.
+> As of now, you can't do anything with the password, but as soon as features are implemented, where a password is important, a oauth2 login will be implemented.
 
 ## Known Issues
 
