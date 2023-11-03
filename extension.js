@@ -271,8 +271,8 @@ function connect() {
 // 	const server = config.get("server", "achieve.jojojux.de")
 // 	const user = config.get("user", "admin")
 // 	let ws = new WebSocket(`ws${secure ? "s" : ""}://` + server +
-// "/ws/user/" + user, { 		headers: { 			"Auth-Password": "admin",
-// 			"Protocol-Version": "0.3.0"
+// "/ws/user/" + user, { 		headers: { 			"Auth-Password":
+// "admin", 			"Protocol-Version": "0.3.0"
 // 		}
 // 	}
 // 	);
@@ -314,9 +314,11 @@ function connect() {
 // 		if (d.type == "new_achievement") {
 // 			let result = await
 // vscode.window.showInformationMessage(`Achievement unlocked: ${d.name}
-// ${d.level}`, "Show Details", "Dismiss"); 			if (result == "Show Details") { 				let
-// panel = vscode.window.createWebviewPanel( 					"new_achievement", 					"Achievement
-// Unlocked", 					vscode.ViewColumn.Active,
+// ${d.level}`, "Show Details", "Dismiss"); 			if (result == "Show
+// Details") { 				let panel =
+// vscode.window.createWebviewPanel( 					"new_achievement",
+// "Achievement Unlocked",
+// vscode.ViewColumn.Active,
 // 					{}
 // 				);
 // 				panel.webview.html = `<table style="padding:
@@ -330,33 +332,35 @@ function connect() {
 // 		}
 // 		else if (d.type == "notice") {
 // 			if (d.topic == "superuser") {
-// 				run_async(vscode.window.showWarningMessage)("Do not use
-// the superuser account to login. (Else you get shown this message each time,
-// which is very annoying...)"); 			} else {
-// 				run_async(vscode.window.showWarningMessage)("The server
-// requested to show a notice that is unkown by the client. Report that on
-// GitHub Issues. (The original topic was: " + d.topic + ")");
+// 				run_async(vscode.window.showWarningMessage)("Do not
+// use the superuser account to login. (Else you get shown this message each
+// time, which is very annoying...)"); 			} else {
+// 				run_async(vscode.window.showWarningMessage)("The
+// server requested to show a notice that is unkown by the client. Report that
+// on GitHub Issues. (The original topic was: " + d.topic + ")");
 // 			}
 // 		}
 // 		else if (d.type == "error_report") {
 // 			if (d.error == "unknown_stat") {
-// 				run_async(vscode.window.showErrorMessage)("A report sent
-// to the server was not registered. This probarbly means that the server is
-// modified, or you misspelled something while trying to get achievements
-// through the console. (The recieved error was: " + d.description + ")"); 			}
-// else if (d.error == "unknown_type") {
-// 				run_async(vscode.window.showErrorMessage)("A message sent
-// to the server had an invalid type. This probarbly means that the server is
-// outdated or modified. (The recieved error was: " + d.description + ")"); 			}
-// else { 				run_async(vscode.window.showErrorMessage)("The server sent an unknown
-// error. Report that on GitHub Issues. (The original error was: " + d.error +
+// 				run_async(vscode.window.showErrorMessage)("A report
+// sent to the server was not registered. This probarbly means that the server
+// is modified, or you misspelled something while trying to get achievements
+// through the console. (The recieved error was: " + d.description + ")");
+// } else if (d.error == "unknown_type") {
+// 				run_async(vscode.window.showErrorMessage)("A message
+// sent to the server had an invalid type. This probarbly means that the server
+// is outdated or modified. (The recieved error was: " + d.description + ")");
+// }
+// else { 				run_async(vscode.window.showErrorMessage)("The
+// server sent an unknown error. Report that on GitHub Issues. (The original
+// error was: " + d.error +
 // ": " + d.description + ")");
 // 			}
 // 			ws.close(4102)
 // 		} else {
-// 			run_async(vscode.window.showErrorMessage)("The server sent an
-// unkown message type. Report that on GitHub Issues. (The message type was: " +
-// d.type + ")"); 			ws.close(4102)
+// 			run_async(vscode.window.showErrorMessage)("The server sent
+// an unkown message type. Report that on GitHub Issues. (The message type was:
+// " + d.type + ")"); 			ws.close(4102)
 // 		}
 // 	}
 // }
@@ -382,7 +386,8 @@ function connect() {
 // 		}, async (data, reason) => {
 // 			let emsg = "An Unkown error occured."
 // 			if (reason.type == "close") {
-// 				emsg = "Connection closed: " + (CLOSE_CODES[reason.code]
+// 				emsg = "Connection closed: " +
+// (CLOSE_CODES[reason.code]
 // || ("Unkown Error " + reason.code + " of type " +
 // (CLOSE_CODES[parseInt(reason.code.toString().slice(0, 2) + "00")] ||
 // "unknown"))) 				console.log(reason)
@@ -395,13 +400,15 @@ function connect() {
 // 				emsg = "Connection rejected."
 // 				console.log(reason)
 // 			}
-// 			let result = await vscode.window.showErrorMessage(`Custom
-// Achievements: ${emsg}`, "Retry", "More Information", "Ignore"); 			if (result ==
-// "Retry") await setup_websocket(); 			if (result == "More Information") { 				switch
-// (reason.type) { 					case "close":
+// 			let result = await
+// vscode.window.showErrorMessage(`Custom Achievements: ${emsg}`, "Retry", "More
+// Information", "Ignore"); 			if (result == "Retry") await
+// setup_websocket(); 			if (result == "More Information") {
+// switch (reason.type) { 					case "close":
 // 						// open website
 // 						"https://github.com/J0J0HA/custom-achievements-server/wiki/Websocket-API#"
-// + reason.code.toString().slice(0, 2) + "xx" 						break; 					default:
+// + reason.code.toString().slice(0, 2) + "xx"
+// break; 					default:
 // 						// sth else
 // 						break;
 // 				}
@@ -635,4 +642,7 @@ function deactivate() {
   ws.close();
 }
 
-module.exports = { activate, deactivate };
+module.exports = {
+  activate,
+  deactivate,
+};
