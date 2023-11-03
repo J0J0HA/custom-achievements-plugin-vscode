@@ -4,18 +4,16 @@ const WebSocket = require("ws").WebSocket;
 let ws;
 
 function send_stats_update(stat, count = 1, meta = {}) {
-  if (count < 1)
-    return;
-  if (ws.readyState != WebSocket.OPEN)
-    return;
+  if (count < 1) return;
+  if (ws.readyState != WebSocket.OPEN) return;
 
   ws.send(
-      JSON.stringify({
-        type : "stats_update",
-        count : count,
-        name : stat,
-        meta : {timestamp : Date.now(), ...meta},
-      }),
+    JSON.stringify({
+      type: "stats_update",
+      count: count,
+      name: stat,
+      meta: { timestamp: Date.now(), ...meta },
+    }),
   );
 }
 
@@ -36,18 +34,18 @@ class CASWebSocket {
     // Constants
     this.PROTOCOL_VERSION = "0.3.0";
     this.CLOSE_CODES = {
-      1006 : "Connection Lost",
-      4100 : "Assertion Failed",
-      4101 : "Protocol Version Mismatch",
-      4102 : "Unknown Message",
-      4103 : "Handshake Interrupted",
-      4104 : "Client Reconnecting",
-      4200 : "Bad Request",
-      4201 : "Missing Credentials",
-      4202 : "Unknown User",
-      4300 : "Server Error",
-      4400 : "Database Misconfigured",
-      4401 : "UserProfile Missing",
+      1006: "Connection Lost",
+      4100: "Assertion Failed",
+      4101: "Protocol Version Mismatch",
+      4102: "Unknown Message",
+      4103: "Handshake Interrupted",
+      4104: "Client Reconnecting",
+      4200: "Bad Request",
+      4201: "Missing Credentials",
+      4202: "Unknown User",
+      4300: "Server Error",
+      4400: "Database Misconfigured",
+      4401: "UserProfile Missing",
     };
 
     // Setup
@@ -56,15 +54,17 @@ class CASWebSocket {
       this.get_event_handler("connected")();
     });
 
-    this.set_msg_handler(
-        "new_achievement",
-        (data) => { this.get_event_handler("new_achievement")(data); });
+    this.set_msg_handler("new_achievement", (data) => {
+      this.get_event_handler("new_achievement")(data);
+    });
 
-    this.set_msg_handler("notice",
-                         (data) => { this.get_event_handler("notice")(data); });
+    this.set_msg_handler("notice", (data) => {
+      this.get_event_handler("notice")(data);
+    });
 
-    this.set_msg_handler("error",
-                         (data) => { this.get_event_handler("error")(data); });
+    this.set_msg_handler("error", (data) => {
+      this.get_event_handler("error")(data);
+    });
 
     this.set_event_handler("message", (raw_data) => {
       const data = JSON.parse(raw_data);
@@ -72,11 +72,17 @@ class CASWebSocket {
     });
   }
 
-  get_base() { return `${this.secure ? "s" : ""}://${this.server}`; }
+  get_base() {
+    return `${this.secure ? "s" : ""}://${this.server}`;
+  }
 
-  get_ws_base() { return `ws${this.get_base()}`; }
+  get_ws_base() {
+    return `ws${this.get_base()}`;
+  }
 
-  get_http_base() { return `http${this.get_base()}`; }
+  get_http_base() {
+    return `http${this.get_base()}`;
+  }
 
   get_ws_user_address() {
     return `${this.get_ws_base()}/ws/user/${this.username}`;
@@ -86,18 +92,30 @@ class CASWebSocket {
     return `${this.get_http_base()}/user/${this.username}`;
   }
 
-  set_msg_handler(type, handler) { this.msg_handlers[type] = handler; }
-
-  get_msg_handler(type) {
-    return (this.msg_handlers[type] ||
-            ((data) => { this.get_event_handler("unknown_type")(data); }));
+  set_msg_handler(type, handler) {
+    this.msg_handlers[type] = handler;
   }
 
-  set_event_handler(type, handler) { this.event_handlers[type] = handler; }
+  get_msg_handler(type) {
+    return (
+      this.msg_handlers[type] ||
+      ((data) => {
+        this.get_event_handler("unknown_type")(data);
+      })
+    );
+  }
+
+  set_event_handler(type, handler) {
+    this.event_handlers[type] = handler;
+  }
 
   get_event_handler(type) {
-    return (this.event_handlers[type] ||
-            (() => { console.info("Ignored Event: " + type); }));
+    return (
+      this.event_handlers[type] ||
+      (() => {
+        console.info("Ignored Event: " + type);
+      })
+    );
   }
 
   reconnect() {
@@ -107,9 +125,9 @@ class CASWebSocket {
 
   connect() {
     this.websocket = new WebSocket(this.get_ws_user_address(), {
-      headers : {
-        "Auth-Password" : this.password,
-        "Protocol-Version" : this.PROTOCOL_VERSION,
+      headers: {
+        "Auth-Password": this.password,
+        "Protocol-Version": this.PROTOCOL_VERSION,
       },
     });
 
@@ -118,37 +136,43 @@ class CASWebSocket {
       this.get_event_handler("connecting")();
     });
 
-    this.websocket.on("message",
-                      (data) => { this.get_event_handler("message")(data); });
+    this.websocket.on("message", (data) => {
+      this.get_event_handler("message")(data);
+    });
 
-    this.websocket.on(
-        "error", (error) => { this.get_event_handler("ws-reject")(error); });
+    this.websocket.on("error", (error) => {
+      this.get_event_handler("ws-reject")(error);
+    });
 
-    this.websocket.on("close",
-                      (code) => { this.get_event_handler("close")(code); });
+    this.websocket.on("close", (code) => {
+      this.get_event_handler("close")(code);
+    });
 
-    this.websocket.on(
-        "unexpected-response",
-        (error) => { this.get_event_handler("http-reject")(error); });
+    this.websocket.on("unexpected-response", (error) => {
+      this.get_event_handler("http-reject")(error);
+    });
   }
 
   report(name = "unknown", count = 1, meta = {}) {
-    if (count < 1)
-      return;
+    if (count < 1) return;
 
     this.websocket.send(
-        JSON.stringify({
-          type : "stats_update",
-          count,
-          name,
-          meta : {timestamp : Date.now(), ...meta},
-        }),
+      JSON.stringify({
+        type: "stats_update",
+        count,
+        name,
+        meta: { timestamp: Date.now(), ...meta },
+      }),
     );
   }
 
-  close(code) { this.websocket.close(code); }
+  close(code) {
+    this.websocket.close(code);
+  }
 
-  send(json) { ws.send(JSON.stringify(json)); }
+  send(json) {
+    ws.send(JSON.stringify(json));
+  }
 }
 
 function connect() {
@@ -167,33 +191,37 @@ function connect() {
 
   casws.set_event_handler("new_achievement", async (data) => {
     let result = await vscode.window.showInformationMessage(
-        `Achievement unlocked: ${data.name} ${data.level}`,
-        "Show Details",
-        "Dismiss",
+      `Achievement unlocked: ${data.name} ${data.level}`,
+      "Show Details",
+      "Dismiss",
     );
     if (result == "Show Details") {
       let panel = vscode.window.createWebviewPanel(
-          "new_achievement",
-          "Achievement Unlocked",
-          vscode.ViewColumn.Active,
-          {},
+        "new_achievement",
+        "Achievement Unlocked",
+        vscode.ViewColumn.Active,
+        {},
       );
       panel.webview.html = `<table style="padding: 10px"><tr><td><img src="${
-          data.image_url}" style="border-radius: 50%; height: 150px; width: 150px;"></td><td style="padding: 0px 30px; display: block; top: 0px; position:  absolute;"><h1>${
-          data.name} ${data.level}</h1><p>${data.description}</p><a href="${
-          casws.get_http_user_address()}">Show all my achievements</a></td>`;
+        data.image_url
+      }" style="border-radius: 50%; height: 150px; width: 150px;"></td><td style="padding: 0px 30px; display: block; top: 0px; position:  absolute;"><h1>${
+        data.name
+      } ${data.level}</h1><p>${
+        data.description
+      }</p><a href="${casws.get_http_user_address()}">Show all my achievements</a></td>`;
     }
   });
 
   casws.set_event_handler("notice", async (data) => {
     if (data.topic == "superuser") {
       vscode.window.showWarningMessage(
-          "Do not use the superuser account to login. (Else you get shown this message each time, which is very annoying...)",
+        "Do not use the superuser account to login. (Else you get shown this message each time, which is very annoying...)",
       );
     } else {
       vscode.window.showWarningMessage(
-          "The server requested to show a notice that is unkown by the client. Report that on GitHub Issues. (The original topic was: " +
-              data.topic + ")",
+        "The server requested to show a notice that is unkown by the client. Report that on GitHub Issues. (The original topic was: " +
+          data.topic +
+          ")",
       );
     }
   });
@@ -201,18 +229,23 @@ function connect() {
   casws.set_event_handler("error", async (data) => {
     if (data.error == "unknown_stat") {
       vscode.window.showErrorMessage(
-          "A report sent to the server was not registered. This probarbly means that the server is modified, or you misspelled something while trying to get achievements through the console. (The recieved error was: " +
-              data.description + ")",
+        "A report sent to the server was not registered. This probarbly means that the server is modified, or you misspelled something while trying to get achievements through the console. (The recieved error was: " +
+          data.description +
+          ")",
       );
     } else if (data.error == "unknown_type") {
       vscode.window.showErrorMessage(
-          "A message sent to the server had an invalid type. This probarbly means that the server is outdated or modified. (The recieved error was: " +
-              data.description + ")",
+        "A message sent to the server had an invalid type. This probarbly means that the server is outdated or modified. (The recieved error was: " +
+          data.description +
+          ")",
       );
     } else {
       vscode.window.showErrorMessage(
-          "The server sent an unknown error. Report that on GitHub Issues. (The original error was: " +
-              data.error + ": " + data.description + ")",
+        "The server sent an unknown error. Report that on GitHub Issues. (The original error was: " +
+          data.error +
+          ": " +
+          data.description +
+          ")",
       );
     }
     casws.close(4102);
@@ -220,8 +253,9 @@ function connect() {
 
   casws.set_event_handler("unknown_type", (data) => {
     vscode.window.showErrorMessage(
-        "The server sent an unkown message type. Report that on GitHub Issues. (The message type was: " +
-            data.type + ")",
+      "The server sent an unkown message type. Report that on GitHub Issues. (The message type was: " +
+        data.type +
+        ")",
     );
     casws.close(4102);
   });
@@ -400,142 +434,143 @@ async function activate(context) {
   let casws = connect();
 
   context.subscriptions.push(
-      vscode.commands.registerCommand(
-          "custom-achievements.reconnect",
-          function() { casws.reconnect(); },
-          ),
+    vscode.commands.registerCommand(
+      "custom-achievements.reconnect",
+      function () {
+        casws.reconnect();
+      },
+    ),
   );
 
   context.subscriptions.push(
-      vscode.workspace.onDidOpenTextDocument((document) => {
-        if (document.fileName.endsWith(".git"))
-          return;
-        casws.report("file.open." + document.languageId);
-      }),
+    vscode.workspace.onDidOpenTextDocument((document) => {
+      if (document.fileName.endsWith(".git")) return;
+      casws.report("file.open." + document.languageId);
+    }),
   );
 
   context.subscriptions.push(
-      vscode.workspace.onDidCloseTextDocument((document) => {
-        if (document.fileName.endsWith(".git"))
-          return;
-        casws.report("file.close." + document.languageId);
-      }),
+    vscode.workspace.onDidCloseTextDocument((document) => {
+      if (document.fileName.endsWith(".git")) return;
+      casws.report("file.close." + document.languageId);
+    }),
   );
 
   context.subscriptions.push(
-      vscode.workspace.onDidChangeTextDocument((changeEvent) => {
-        if (changeEvent.contentChanges.length == 0)
-          return;
-        if (!changeEvent.contentChanges[0])
-          return;
-        if (changeEvent.reason == vscode.TextDocumentChangeReason.Undo) {
-          casws.report("text.undo." + changeEvent.document.languageId);
-          return;
-        }
-        if (changeEvent.reason == vscode.TextDocumentChangeReason.Redo) {
-          casws.report("text.redo." + changeEvent.document.languageId);
-          return;
-        }
-        if (changeEvent.contentChanges[0].text.length == 0) {
-          casws.report(
-              "text.delete.abs." + changeEvent.document.languageId,
-              changeEvent.contentChanges[0].rangeLength,
-          );
-          casws.report(
-              "text.delete.past-1." + changeEvent.document.languageId,
-              1,
-          );
-          if (changeEvent.contentChanges[0].rangeLength >= 100) {
-            casws.report(
-                "text.delete.past-100." + changeEvent.document.languageId,
-                1,
-            );
-          }
-        }
-        if (changeEvent.contentChanges[0].text.length > 1) {
-          casws.report(
-              "text.paste.abs." + changeEvent.document.languageId,
-              changeEvent.contentChanges[0].text.length,
-          );
-          casws.report("text.paste.past-1." + changeEvent.document.languageId,
-                       1);
-          if (changeEvent.contentChanges[0].text.length >= 100) {
-            casws.report(
-                "text.paste.past-100." + changeEvent.document.languageId,
-                1,
-            );
-          }
-        }
-        casws.report("type." + changeEvent.document.languageId, 1);
-      }),
-  );
-
-  context.subscriptions.push(
-      vscode.workspace.onDidCreateFiles((createEvent) => {
+    vscode.workspace.onDidChangeTextDocument((changeEvent) => {
+      if (changeEvent.contentChanges.length == 0) return;
+      if (!changeEvent.contentChanges[0]) return;
+      if (changeEvent.reason == vscode.TextDocumentChangeReason.Undo) {
+        casws.report("text.undo." + changeEvent.document.languageId);
+        return;
+      }
+      if (changeEvent.reason == vscode.TextDocumentChangeReason.Redo) {
+        casws.report("text.redo." + changeEvent.document.languageId);
+        return;
+      }
+      if (changeEvent.contentChanges[0].text.length == 0) {
         casws.report(
-            "file.create." + createEvent.files[0].languageId,
-            createEvent.files.length,
+          "text.delete.abs." + changeEvent.document.languageId,
+          changeEvent.contentChanges[0].rangeLength,
         );
-      }),
-  );
-
-  context.subscriptions.push(
-      vscode.workspace.onDidDeleteFiles((deleteEvent) => {
         casws.report(
-            "file.delete." + deleteEvent.files[0].languageId,
-            deleteEvent.files.length,
+          "text.delete.past-1." + changeEvent.document.languageId,
+          1,
         );
-      }),
-  );
-
-  context.subscriptions.push(
-      vscode.workspace.onDidRenameFiles((renameEvent) => {
-        casws.report(
-            "file.rename." + renameEvent.files[0].languageId,
-            renameEvent.files.length,
-        );
-      }),
-  );
-
-  context.subscriptions.push(
-      vscode.debug.onDidStartDebugSession(
-          (session) => { casws.report("debug." + session.type); }),
-  );
-
-  context.subscriptions.push(
-      vscode.workspace.onDidChangeConfiguration((event) => {
-        casws.report("settings.changed");
-        if (event.affectsConfiguration("workbench.colorTheme")) {
-          const newTheme =
-              vscode.workspace.getConfiguration().get("workbench.colorTheme");
-          casws.report("settings.changed.theme." + newTheme);
+        if (changeEvent.contentChanges[0].rangeLength >= 100) {
+          casws.report(
+            "text.delete.past-100." + changeEvent.document.languageId,
+            1,
+          );
         }
-      }),
+      }
+      if (changeEvent.contentChanges[0].text.length > 1) {
+        casws.report(
+          "text.paste.abs." + changeEvent.document.languageId,
+          changeEvent.contentChanges[0].text.length,
+        );
+        casws.report("text.paste.past-1." + changeEvent.document.languageId, 1);
+        if (changeEvent.contentChanges[0].text.length >= 100) {
+          casws.report(
+            "text.paste.past-100." + changeEvent.document.languageId,
+            1,
+          );
+        }
+      }
+      casws.report("type." + changeEvent.document.languageId, 1);
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidCreateFiles((createEvent) => {
+      casws.report(
+        "file.create." + createEvent.files[0].languageId,
+        createEvent.files.length,
+      );
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidDeleteFiles((deleteEvent) => {
+      casws.report(
+        "file.delete." + deleteEvent.files[0].languageId,
+        deleteEvent.files.length,
+      );
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidRenameFiles((renameEvent) => {
+      casws.report(
+        "file.rename." + renameEvent.files[0].languageId,
+        renameEvent.files.length,
+      );
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.debug.onDidStartDebugSession((session) => {
+      casws.report("debug." + session.type);
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      casws.report("settings.changed");
+      if (event.affectsConfiguration("workbench.colorTheme")) {
+        const newTheme = vscode.workspace
+          .getConfiguration()
+          .get("workbench.colorTheme");
+        casws.report("settings.changed.theme." + newTheme);
+      }
+    }),
   );
 
   let old_installed_extensions = [];
-  vscode.extensions.all.forEach(
-      (extension) => { old_installed_extensions.push(extension.id); });
+  vscode.extensions.all.forEach((extension) => {
+    old_installed_extensions.push(extension.id);
+  });
 
   context.subscriptions.push(
-      vscode.extensions.onDidChange(() => {
-        let new_installed_extensions = [];
-        vscode.extensions.all.forEach(
-            (extension) => { new_installed_extensions.push(extension.id); });
-        let added = new_installed_extensions.filter(
-            (x) => !old_installed_extensions.includes(x),
-        );
-        let removed = old_installed_extensions.filter(
-            (x) => !new_installed_extensions.includes(x),
-        );
-        for (let ext of added) {
-          casws.report("extension.install." + ext.replace(".", "_"));
-        }
-        for (let ext of removed) {
-          casws.report("extension.uninstall." + ext.replace(".", "_"));
-        }
-        old_installed_extensions = new_installed_extensions;
-      }),
+    vscode.extensions.onDidChange(() => {
+      let new_installed_extensions = [];
+      vscode.extensions.all.forEach((extension) => {
+        new_installed_extensions.push(extension.id);
+      });
+      let added = new_installed_extensions.filter(
+        (x) => !old_installed_extensions.includes(x),
+      );
+      let removed = old_installed_extensions.filter(
+        (x) => !new_installed_extensions.includes(x),
+      );
+      for (let ext of added) {
+        casws.report("extension.install." + ext.replace(".", "_"));
+      }
+      for (let ext of removed) {
+        casws.report("extension.uninstall." + ext.replace(".", "_"));
+      }
+      old_installed_extensions = new_installed_extensions;
+    }),
   );
 
   vscode.window.onDidChangeTextEditorOptions((event) => {
@@ -547,49 +582,54 @@ async function activate(context) {
   });
 
   intervals.push(
-      setInterval(() => { casws.report("vscode.ran-for-full.minute"); },
-                  60 * 1000),
+    setInterval(() => {
+      casws.report("vscode.ran-for-full.minute");
+    }, 60 * 1000),
   );
 
   intervals.push(
-      setInterval(
-          () => { casws.report("vscode.ran-for-full.hour"); },
-          60 * 60 * 1000,
-          ),
+    setInterval(
+      () => {
+        casws.report("vscode.ran-for-full.hour");
+      },
+      60 * 60 * 1000,
+    ),
   );
 
   intervals.push(
-      setInterval(
-          () => { casws.report("vscode.ran-for-full.day"); },
-          24 * 60 * 60 * 1000,
-          ),
+    setInterval(
+      () => {
+        casws.report("vscode.ran-for-full.day");
+      },
+      24 * 60 * 60 * 1000,
+    ),
   );
 
   intervals.push(
-      setInterval(
-          () => { casws.report("vscode.ran-for-full.week"); },
-          7 * 24 * 60 * 60 * 1000,
-          ),
+    setInterval(
+      () => {
+        casws.report("vscode.ran-for-full.week");
+      },
+      7 * 24 * 60 * 60 * 1000,
+    ),
   );
 
   casws.set_event_handler("ws-reject", async (error) => {
     let result = await vscode.window.showErrorMessage(
-        "Custom Achievements: Connection rejected.",
-        "Retry",
-        "Ignore",
+      "Custom Achievements: Connection rejected.",
+      "Retry",
+      "Ignore",
     );
-    if (result == "Retry")
-      casws.reconnect();
+    if (result == "Retry") casws.reconnect();
   });
 
   casws.set_event_handler("close", async (error) => {
     let result = await vscode.window.showErrorMessage(
-        "Lost connection. Reconnect?",
-        "Yes",
-        "No",
+      "Lost connection. Reconnect?",
+      "Yes",
+      "No",
     );
-    if (result == "Yes")
-      casws.reconnect();
+    if (result == "Yes") casws.reconnect();
   });
 
   console.log("custom-achievements is started.");
@@ -604,5 +644,5 @@ function deactivate() {
 
 module.exports = {
   activate,
-  deactivate
+  deactivate,
 };
