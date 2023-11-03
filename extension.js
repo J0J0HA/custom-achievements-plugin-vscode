@@ -53,24 +53,24 @@ class CASWebSocket {
 		this.set_msg_handler("accept_connection", () => {
 			this.accepted = true;
 			this.get_event_handler("connected")();
-		})
+		});
 
 		this.set_msg_handler("new_achievement", (data) => {
 			this.get_event_handler("new_achievement")(data);
-		})
+		});
 
 		this.set_msg_handler("notice", (data) => {
 			this.get_event_handler("notice")(data);
-		})
+		});
 
 		this.set_msg_handler("error", (data) => {
 			this.get_event_handler("error")(data);
-		})
+		});
 
 		this.set_event_handler("message", (raw_data) => {
 			const data = JSON.parse(raw_data);
 			this.get_msg_handler(data.type)(data);
-		})
+		});
 	}
 
 	get_base() {
@@ -114,7 +114,7 @@ class CASWebSocket {
 	}
 
 	reconnect() {
-		this.close(4104)
+		this.close(4104);
 		this.connect();
 	}
 
@@ -173,17 +173,17 @@ class CASWebSocket {
 
 function connect() {
 	const config = vscode.workspace.getConfiguration("custom-achievements");
-	const secure = config.get("secure", true)
-	const server = config.get("server", "achieve.jojojux.de")
-	const user = config.get("user", "admin")
-	const password = config.get("password", "admin")
+	const secure = config.get("secure", true);
+	const server = config.get("server", "achieve.jojojux.de");
+	const user = config.get("user", "admin");
+	const password = config.get("password", "admin");
 
 	let casws = new CASWebSocket(secure, server, user, password);
 
 	casws.set_event_handler("connected", () => {
 		casws.report("ide.vscode.open");
 		casws.report("server.connect");
-	})
+	});
 
 	casws.set_event_handler("new_achievement", async (data) => {
 		let result = await vscode.window.showInformationMessage(`Achievement unlocked: ${data.name} ${data.level}`, "Show Details", "Dismiss");
@@ -196,7 +196,7 @@ function connect() {
 			);
 			panel.webview.html = `<table style="padding: 10px"><tr><td><img src="${data.image_url}" style="border-radius: 50%; height: 150px; width: 150px;"></td><td style="padding: 0px 30px; display: block; top: 0px; position:  absolute;"><h1>${data.name} ${data.level}</h1><p>${data.description}</p><a href="${casws.get_http_user_address()}">Show all my achievements</a></td>`;
 		}
-	})
+	});
 
 	casws.set_event_handler("notice", async (data) => {
 		if (data.topic == "superuser") {
@@ -204,7 +204,7 @@ function connect() {
 		} else {
 			vscode.window.showWarningMessage("The server requested to show a notice that is unkown by the client. Report that on GitHub Issues. (The original topic was: " + data.topic + ")");
 		}
-	})
+	});
 
 	casws.set_event_handler("error", async (data) => {
 		if (data.error == "unknown_stat") {
@@ -214,13 +214,13 @@ function connect() {
 		} else {
 			vscode.window.showErrorMessage("The server sent an unknown error. Report that on GitHub Issues. (The original error was: " + data.error + ": " + data.description + ")");
 		}
-		casws.close(4102)
-	})
+		casws.close(4102);
+	});
 
 	casws.set_event_handler("unknown_type", (data) => {
 		vscode.window.showErrorMessage("The server sent an unkown message type. Report that on GitHub Issues. (The message type was: " + data.type + ")");
-		casws.close(4102)
-	})
+		casws.close(4102);
+	});
 
 	casws.connect();
 
@@ -432,7 +432,7 @@ async function activate(context) {
 	}));
 
 	context.subscriptions.push(vscode.debug.onDidStartDebugSession((session) => {
-		casws.report("debug." + session.type)
+		casws.report("debug." + session.type);
 	}));
 
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration((event) => {
@@ -445,27 +445,27 @@ async function activate(context) {
 
 	let old_installed_extensions = [];
 	vscode.extensions.all.forEach((extension) => {
-		old_installed_extensions.push(extension.id)
-	})
+		old_installed_extensions.push(extension.id);
+	});
 
 	context.subscriptions.push(vscode.extensions.onDidChange(() => {
 		let new_installed_extensions = [];
 		vscode.extensions.all.forEach((extension) => {
-			new_installed_extensions.push(extension.id)
-		})
+			new_installed_extensions.push(extension.id);
+		});
 		let added = new_installed_extensions.filter((x) => !old_installed_extensions.includes(x));
 		let removed = old_installed_extensions.filter((x) => !new_installed_extensions.includes(x));
 		for (let ext of added) {
-			casws.report("extension.install." + ext.replace(".", "_"))
+			casws.report("extension.install." + ext.replace(".", "_"));
 		}
 		for (let ext of removed) {
-			casws.report("extension.uninstall." + ext.replace(".", "_"))
+			casws.report("extension.uninstall." + ext.replace(".", "_"));
 		}
 		old_installed_extensions = new_installed_extensions;
 	}));
 
 	vscode.window.onDidChangeTextEditorOptions(event => {
-		console.log(event)
+		console.log(event);
         if (event.options.fontOptions.color) {
             const newColor = event.options.fontOptions.color;
             console.log(`Font color changed to ${newColor}`);
@@ -498,7 +498,7 @@ async function activate(context) {
 		if (result == "Yes") casws.reconnect();
 	});
 
-	console.log("custom-achievements is started.")
+	console.log("custom-achievements is started.");
 }
 
 function deactivate() {
