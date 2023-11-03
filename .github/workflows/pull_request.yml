@@ -19,14 +19,14 @@ jobs:
       run: npm version prepatch
     - name: Build the VSCode Extension Package
       run: vsce package --out dist
-#    - name: FTP Upload
-#      uses: Dylan700/sftp-upload-action@latest
-#      with:
-#        server: 212.227.8.25
-#        username: ${{ secrets.FTP_USERNAME }}
-#        password: ${{ secrets.FTP_PASSWORD }}
-#        uploads: |
-#          ./dist/ => /www/files.jojojux.de/resources/builds/custom-achievements-plugin-vscode/
+    - name: FTP Upload
+      uses: Dylan700/sftp-upload-action@latest
+      with:
+        server: 212.227.8.25
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        uploads: |
+          ./dist/ => /www/files.jojojux.de/resources/builds/custom-achievements-plugin-vscode/
     - uses: actions/upload-artifact@v3
       with:
         name: VSCode Extension
