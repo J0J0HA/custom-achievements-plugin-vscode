@@ -16,7 +16,7 @@ jobs:
         git config --global user.email "bot@github.com"
         git config --global user.name "Github Actions Bot"
     - name: Set Version
-      run: npm version prepatch
+      run: npm version prerelease
     - name: Build the VSCode Extension Package
       run: vsce package --out dist
     - name: FTP Upload
