@@ -1,4 +1,10 @@
-.vscode-test
-.vscode
-test
-node_modules
+node_modules/**
+.vscode/**
+.vscode-test/**
+test/**
+.vscodeignore
+.yarnrc
+vsc-extension-quickstart.md
+**/jsconfig.json
+**/*.map
+**/.eslintrc.json
