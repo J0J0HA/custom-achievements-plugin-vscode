@@ -33,7 +33,7 @@ class CASWebSocket {
 		this.event_handlers = {};
 
 		// Constants
-		this.PROTOCOL_VERSION = "0.3.0"
+		this.PROTOCOL_VERSION = "0.3.0";
 		this.CLOSE_CODES = {
 			1006: "Connection Lost",
 			4100: "Assertion Failed",
