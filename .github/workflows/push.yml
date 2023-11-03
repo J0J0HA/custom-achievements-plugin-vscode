@@ -17,6 +17,11 @@ jobs:
         git config --global user.name "Github Actions Bot"
     - name: Set Version
       run: npm version patch
+    - name: Commit and Push
+      run: |
+        git add .
+        git commit -m "Update Version"
+        git push
     - name: Build the VSCode Extension Package
       run: vsce package --out dist
 #    - name: FTP Upload
