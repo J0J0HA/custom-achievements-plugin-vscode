@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup
-      run: npm i && npm i -g vsce && mkdir dist
+      run: npm i && npm i -g -U @vscode/vsce && mkdir dist
     - name: Set Git User
       run: |
         git config --global user.email "bot@github.com"
@@ -20,13 +20,13 @@ jobs:
     - name: Build the VSCode Extension Package
       run: vsce package --out dist
     - name: FTP Upload
-      uses: Dylan700/sftp-upload-action@latest
+      uses: wangyucode/sftp-upload-action@v2.0.2
       with:
-        server: 212.227.8.25
+        host: 212.227.8.25
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        uploads: |
-          ./dist/ => /www/files.jojojux.de/resources/builds/custom-achievements-plugin-vscode/
+        localDir: ./dist
+        remoteDir: /www/files.jojojux.de/resources/builds/custom-achievements-plugin-vscode
     - uses: actions/upload-artifact@v3
       with:
         name: VSCode Extension
