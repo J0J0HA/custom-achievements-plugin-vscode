@@ -1,5 +1,5 @@
-const vscode = require('vscode');
-const WebSocket = require('ws').WebSocket;
+const vscode = require("vscode");
+const WebSocket = require("ws").WebSocket;
 
 let ws;
 
@@ -172,7 +172,7 @@ class CASWebSocket {
 }
 
 function connect() {
-	const config = vscode.workspace.getConfiguration('custom-achievements');
+	const config = vscode.workspace.getConfiguration("custom-achievements");
 	const secure = config.get("secure", true)
 	const server = config.get("server", "achieve.jojojux.de")
 	const user = config.get("user", "admin")
@@ -189,8 +189,8 @@ function connect() {
 		let result = await vscode.window.showInformationMessage(`Achievement unlocked: ${data.name} ${data.level}`, "Show Details", "Dismiss");
 		if (result == "Show Details") {
 			let panel = vscode.window.createWebviewPanel(
-				'new_achievement',
-				'Achievement Unlocked',
+				"new_achievement",
+				"Achievement Unlocked",
 				vscode.ViewColumn.Active,
 				{}
 			);
@@ -228,13 +228,13 @@ function connect() {
 }
 
 // function _connect(success, fail, message) {
-// 	const config = vscode.workspace.getConfiguration('custom-achievements');
+// 	const config = vscode.workspace.getConfiguration("custom-achievements");
 // 	const secure = config.get("secure", true)
 // 	const server = config.get("server", "achieve.jojojux.de")
 // 	const user = config.get("user", "admin")
 // 	let ws = new WebSocket(`ws${secure ? "s" : ""}://` + server + "/ws/user/" + user, {
 // 		headers: {
-// 			"Auth-Password": 'admin',
+// 			"Auth-Password": "admin",
 // 			"Protocol-Version": "0.3.0"
 // 		}
 // 	}
@@ -279,8 +279,8 @@ function connect() {
 // 			let result = await vscode.window.showInformationMessage(`Achievement unlocked: ${d.name} ${d.level}`, "Show Details", "Dismiss");
 // 			if (result == "Show Details") {
 // 				let panel = vscode.window.createWebviewPanel(
-// 					'new_achievement',
-// 					'Achievement Unlocked',
+// 					"new_achievement",
+// 					"Achievement Unlocked",
 // 					vscode.ViewColumn.Active,
 // 					{}
 // 				);
@@ -360,11 +360,13 @@ function connect() {
 // 	})
 // }
 
+let intervals = []
+
 /**
  * @param {vscode.ExtensionContext} context
  */
 async function activate(context) {
-	// context.subscriptions.push(vscode.commands.registerCommand('custom-achievements.reconnect', function () {
+	// context.subscriptions.push(vscode.commands.registerCommand("custom-achievements.reconnect", function () {
 	// 	setup_websocket().then((nws) => {
 	// 		ws = nws
 	// 		send_stats_update("ide.open.vscode");
@@ -375,7 +377,7 @@ async function activate(context) {
 
 	let casws = connect();
 
-	context.subscriptions.push(vscode.commands.registerCommand('custom-achievements.reconnect', function () {
+	context.subscriptions.push(vscode.commands.registerCommand("custom-achievements.reconnect", function () {
 		casws.reconnect();
 	}));
 
@@ -390,18 +392,120 @@ async function activate(context) {
 	}));
 
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((changeEvent) => {
-		casws.report("type." + changeEvent.document.languageId, changeEvent.contentChanges.length);
+		if (changeEvent.contentChanges.length == 0) return;
+		if (!changeEvent.contentChanges[0]) return;
+		if (changeEvent.reason == vscode.TextDocumentChangeReason.Undo) {
+			casws.report("text.undo." + changeEvent.document.languageId);
+			return;
+		}
+		if (changeEvent.reason == vscode.TextDocumentChangeReason.Redo) {
+			casws.report("text.redo." + changeEvent.document.languageId);
+			return;
+		}
+		if (changeEvent.contentChanges[0].text.length == 0) {
+			casws.report("text.delete.abs." + changeEvent.document.languageId, changeEvent.contentChanges[0].rangeLength);
+			casws.report("text.delete.past-1."+ changeEvent.document.languageId, 1);
+			if (changeEvent.contentChanges[0].rangeLength >= 100) {
+				casws.report("text.delete.past-100." + changeEvent.document.languageId, 1);
+			}
+		}
+		if (changeEvent.contentChanges[0].text.length > 1) {
+			casws.report("text.paste.abs."+ changeEvent.document.languageId, changeEvent.contentChanges[0].text.length);
+			casws.report("text.paste.past-1."+ changeEvent.document.languageId, 1);
+			if (changeEvent.contentChanges[0].text.length >= 100) {
+				casws.report("text.paste.past-100." + changeEvent.document.languageId, 1);
+			}
+		}
+		casws.report("type." + changeEvent.document.languageId, 1);
+	}));
+
+	context.subscriptions.push(vscode.workspace.onDidCreateFiles((createEvent) => {
+		casws.report("file.create." + createEvent.files[0].languageId, createEvent.files.length);
+	}));
+
+	context.subscriptions.push(vscode.workspace.onDidDeleteFiles((deleteEvent) => {
+		casws.report("file.delete." + deleteEvent.files[0].languageId, deleteEvent.files.length);
+	}));
+
+	context.subscriptions.push(vscode.workspace.onDidRenameFiles((renameEvent) => {
+		casws.report("file.rename." + renameEvent.files[0].languageId, renameEvent.files.length);
 	}));
 
 	context.subscriptions.push(vscode.debug.onDidStartDebugSession((session) => {
 		casws.report("debug." + session.type)
 	}));
 
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration((event) => {
+		casws.report("settings.changed");
+		if (event.affectsConfiguration('workbench.colorTheme')) {
+			const newTheme = vscode.workspace.getConfiguration().get('workbench.colorTheme');
+			casws.report("settings.changed.theme." + newTheme);
+		  }
+	}));
+
+	let old_installed_extensions = [];
+	vscode.extensions.all.forEach((extension) => {
+		old_installed_extensions.push(extension.id)
+	})
+
+	context.subscriptions.push(vscode.extensions.onDidChange(() => {
+		let new_installed_extensions = [];
+		vscode.extensions.all.forEach((extension) => {
+			new_installed_extensions.push(extension.id)
+		})
+		let added = new_installed_extensions.filter((x) => !old_installed_extensions.includes(x));
+		let removed = old_installed_extensions.filter((x) => !new_installed_extensions.includes(x));
+		for (let ext of added) {
+			casws.report("extension.install." + ext.replace(".", "_"))
+		}
+		for (let ext of removed) {
+			casws.report("extension.uninstall." + ext.replace(".", "_"))
+		}
+		old_installed_extensions = new_installed_extensions;
+	}));
+
+	vscode.window.onDidChangeTextEditorOptions(event => {
+		console.log(event)
+        if (event.options.fontOptions.color) {
+            const newColor = event.options.fontOptions.color;
+            console.log(`Font color changed to ${newColor}`);
+        }
+    });
+
+	intervals.push(setInterval(() => {
+		casws.report("vscode.ran-for-full.minute");
+	}, 60 * 1000));
+
+	intervals.push(setInterval(() => {
+		casws.report("vscode.ran-for-full.hour");
+	}, 60 * 60 * 1000));
+
+	intervals.push(setInterval(() => {
+		casws.report("vscode.ran-for-full.day");
+	}, 24 * 60 * 60 * 1000));
+
+	intervals.push(setInterval(() => {
+		casws.report("vscode.ran-for-full.week");
+	}, 7 * 24 * 60 * 60 * 1000));
+
+	casws.set_event_handler("ws-reject", async (error) => {
+		let result = await vscode.window.showErrorMessage("Custom Achievements: Connection rejected.", "Retry", "Ignore");
+		if (result == "Retry") casws.reconnect();
+	});
+
+	casws.set_event_handler("close", async (error) => {
+		let result = await vscode.window.showErrorMessage("Lost connection. Reconnect?", "Yes", "No");
+		if (result == "Yes") casws.reconnect();
+	});
+
 	console.log("custom-achievements is started.")
 }
 
 function deactivate() {
-	ws.close()
+	for (let interval of intervals) {
+		clearInterval(interval);
+	}
+	ws.close();
 }
 
 module.exports = {
