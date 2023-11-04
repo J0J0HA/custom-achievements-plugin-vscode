@@ -185,7 +185,7 @@ function connect() {
   let casws = new CASWebSocket(secure, server, user, password);
 
   casws.set_event_handler("connected", () => {
-    casws.report("ide.vscode.open");
+    casws.report("ide.open.vscode");
     casws.report("server.connect");
   });
 
