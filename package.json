@@ -6,7 +6,7 @@
   },
   "displayName": "Custom Achievements",
   "description": "Client for custom-achievements-server",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "engines": {
     "vscode": "^1.79.0"
   },
