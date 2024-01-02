@@ -32,7 +32,7 @@ class CASWebSocket {
     this.event_handlers = {};
 
     // Constants
-    this.PROTOCOL_VERSION = "0.3.0";
+    this.PROTOCOL_VERSION = "0.3.1";
     this.CLOSE_CODES = {
       1006: "Connection Lost",
       4100: "Assertion Failed",
@@ -191,7 +191,7 @@ function connect() {
 
   casws.set_event_handler("new_achievement", async (data) => {
     let result = await vscode.window.showInformationMessage(
-      `Achievement unlocked: ${data.name} ${data.level}`,
+      `Achievement unlocked: ${data.name}`,
       "Show Details",
       "Dismiss",
     );
@@ -206,7 +206,7 @@ function connect() {
         data.image_url
       }" style="border-radius: 50%; height: 150px; width: 150px;"></td><td style="padding: 0px 30px; display: block; top: 0px; position:  absolute;"><h1>${
         data.name
-      } ${data.level}</h1><p>${
+      }</h1><p>${
         data.description
       }</p><a href="${casws.get_http_user_address()}">Show all my achievements</a></td>`;
     }
