@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup
-      run: npm i && npm i -g -U @vscode/vsce && mkdir dist
+      run: npm i && npm i -g @vscode/vsce && mkdir dist
     - name: Set Git User
       run: |
         git config --global user.email "bot@github.com"

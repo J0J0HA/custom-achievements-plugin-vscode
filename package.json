@@ -6,7 +6,7 @@
   },
   "displayName": "Custom Achievements",
   "description": "Client for custom-achievements-server",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "engines": {
     "vscode": "^1.79.0"
   },
@@ -59,7 +59,7 @@
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "20.x",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.79.0",
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.54.0",
     "glob": "^10.3.10",
