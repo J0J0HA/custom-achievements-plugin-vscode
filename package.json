@@ -59,14 +59,14 @@
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.0",
     "@types/node": "20.x",
-    "@types/vscode": "^1.79.0",
+    "@types/vscode": "^1.85.0",
     "@vscode/test-electron": "^2.3.3",
-    "eslint": "^8.52.0",
+    "eslint": "^8.54.0",
     "glob": "^10.3.10",
     "mocha": "^10.1.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "ws": "^8.14.0"
+    "ws": "^8.15.0"
   }
 }
